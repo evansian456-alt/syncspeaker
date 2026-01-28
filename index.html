@@ -156,7 +156,7 @@
     </audio>
 
     <div id="captions" aria-live="polite" aria-atomic="true">Captions will appear here.</div>
-    <section id="status" aria-live="polite" style="margin-top:12px; color:#9aa;">
+    <section id="status" aria-live="polite" style="margin-top:12px; color:#99aaaa;">
       Ready.
     </section>
 
@@ -187,6 +187,7 @@
 
       function startOscillatorDemo() {
         // Fallback short tone if no audio file is bundled
+        if (isUsingOscillator) return; // Prevent multiple oscillators
         if (!audioCtx) {
           audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         }
@@ -208,10 +209,12 @@
       function stopOscillatorDemo() {
         if (!isUsingOscillator || !oscillator) return;
         oscGain.gain.linearRampToValueAtTime(0.0001, audioCtx.currentTime + 0.02);
+        const oscToStop = oscillator;
+        const gainToStop = oscGain;
         setTimeout(() => {
-          try { oscillator.stop(); } catch (e) { /* ignore */ }
-          oscillator.disconnect();
-          oscGain.disconnect();
+          try { oscToStop.stop(); } catch (e) { /* ignore */ }
+          oscToStop.disconnect();
+          gainToStop.disconnect();
         }, 50);
         oscillator = null;
         oscGain = null;
