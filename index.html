@@ -121,7 +121,7 @@
     </audio>
 
     <div id="captions" aria-live="polite" aria-atomic="true">Captions will appear here.</div>
-    <section id="status" aria-live="polite" style="margin-top:12px; color:#9aa;">
+    <section id="status" aria-live="polite">
       Ready.
     </section>
 
@@ -145,12 +145,20 @@
       let audioCtx, oscillator, oscGain;
 
       function supportsAudioSrc() {
-        // Return true if an audio src was added (<source> or audio.src)
-        // audio.currentSrc will be non-empty when a source is present and selected.
-        return Boolean(audio.currentSrc || audio.querySelector('source'));
+        // Return true if an audio src was added and can be loaded
+        // Check if there's a source element with a valid src attribute
+        const sourceElement = audio.querySelector('source');
+        if (sourceElement && sourceElement.src) {
+          return true;
+        }
+        // Or check if currentSrc is available (browser selected a source)
+        return Boolean(audio.currentSrc);
       }
 
       function startOscillatorDemo() {
+        // Prevent creating multiple oscillators
+        if (isUsingOscillator) return;
+        
         // Fallback short tone if no audio file is bundled
         if (!audioCtx) {
           audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -205,6 +213,7 @@
           // Stop tone but keep ability to restart
           stopOscillatorDemo();
           status.textContent = 'Paused (demo tone).';
+          captionsBox.textContent = 'No captions available.';
         } else if (supportsAudioSrc()) {
           audio.pause();
           status.textContent = 'Paused.';
@@ -217,12 +226,12 @@
         if (isUsingOscillator) {
           stopOscillatorDemo();
           status.textContent = 'Stopped (demo tone).';
-          captionsBox.textContent = 'Captions will appear here.';
+          captionsBox.textContent = 'No captions available.';
         } else if (supportsAudioSrc()) {
           audio.pause();
           audio.currentTime = 0;
           status.textContent = 'Stopped.';
-          captionsBox.textContent = 'Captions will appear here.';
+          captionsBox.textContent = 'No captions available.';
         } else {
           status.textContent = 'Nothing to stop.';
         }
@@ -259,10 +268,8 @@
 
       // If a source or track might be added later, attempt to initialize captions on load.
       audio.addEventListener('loadedmetadata', setupCaptions, { once: true });
-      // Also try after DOM load (for static tracks)
-      document.addEventListener('DOMContentLoaded', () => {
-        setTimeout(setupCaptions, 50);
-      });
+      // Call setupCaptions immediately since script is at end of body (DOM already loaded)
+      setupCaptions();
 
       // Clean up audio context on page unload (good practice)
       window.addEventListener('beforeunload', () => {
