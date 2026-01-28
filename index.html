@@ -113,6 +113,8 @@
       text-align: center;
       font-size: 0.95rem;
       font-style: italic;
+      margin-top: 12px;
+      color: #99aaaa;
     }
 
     footer {
@@ -162,7 +164,7 @@
     </audio>
 
     <div id="captions" aria-live="polite" aria-atomic="true">Captions will appear here.</div>
-    <section id="status" aria-live="polite" style="margin-top:12px; color:#99aaaa;">
+    <section id="status" aria-live="polite">
       Ready.
     </section>
 
@@ -189,25 +191,26 @@
         // Return true if an audio src was added and is valid
         // Check if currentSrc is available (means audio has loaded a source)
         if (audio.currentSrc) return true;
-        // Check if a source element exists with a valid src attribute
+        // Check if a source element exists with a valid, non-empty src attribute
         const sourceEl = audio.querySelector('source');
-        return Boolean(sourceEl && sourceEl.getAttribute('src'));
+        const srcAttr = sourceEl ? sourceEl.getAttribute('src') : null;
+        return Boolean(srcAttr && srcAttr.trim());
       }
 
       function startOscillatorDemo() {
-        // Fallback short tone if no audio file is bundled
+        // Fallback demo tone if no audio file is bundled
         if (!audioCtx) {
           audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         }
         oscillator = audioCtx.createOscillator();
         oscGain = audioCtx.createGain();
         oscillator.type = 'sine';
-        oscillator.frequency.value = 440;
-        oscGain.gain.value = 0.0001; // start very quiet to avoid click
+        oscillator.frequency.value = 440; // A4 note (440 Hz)
+        oscGain.gain.value = 0.0001; // Start very quiet to avoid click on start
         oscillator.connect(oscGain);
         oscGain.connect(audioCtx.destination);
         oscillator.start();
-        // ramp up, play for up to 30s (or until stopped)
+        // Ramp up to moderate volume over 20ms to avoid click
         oscGain.gain.linearRampToValueAtTime(0.12, audioCtx.currentTime + 0.02);
         isUsingOscillator = true;
         status.textContent = 'Playing demo tone (no audio bundled).';
@@ -216,13 +219,17 @@
 
       function stopOscillatorDemo() {
         if (!isUsingOscillator || !oscillator) return;
+        // Ramp down to avoid click on stop
         oscGain.gain.linearRampToValueAtTime(0.0001, audioCtx.currentTime + 0.02);
         const osc = oscillator;
         const gain = oscGain;
+        // Clean up after ramp completes
         setTimeout(() => {
-          try { osc.stop(); } catch (e) { /* ignore */ }
-          osc.disconnect();
-          gain.disconnect();
+          try {
+            if (osc) osc.stop();
+          } catch (e) { /* ignore if already stopped */ }
+          if (osc) osc.disconnect();
+          if (gain) gain.disconnect();
         }, 50);
         oscillator = null;
         oscGain = null;
@@ -303,7 +310,8 @@
 
       // If a source or track might be added later, attempt to initialize captions on load.
       audio.addEventListener('loadedmetadata', setupCaptions, { once: true });
-      // Since script is at end of body, DOM is ready - call setupCaptions directly
+      // Since script is at end of body, DOM is ready - call setupCaptions directly.
+      // The timeout gives tracks time to become available after DOM is ready.
       setTimeout(setupCaptions, 50);
 
       // Clean up audio context on page unload (good practice)
