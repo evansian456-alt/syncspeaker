@@ -197,8 +197,11 @@
     const captionsDiv = document.getElementById('captions');
 
     // Web Audio API for oscillator fallback
+    const A4_FREQUENCY = 440; // A4 note
+    const OSCILLATOR_VOLUME = 0.3;
     let audioContext = null;
     let oscillator = null;
+    let gainNode = null;
     let isOscillatorPlaying = false;
 
     // Update status message
@@ -215,7 +218,7 @@
 
     // Check if audio has a source
     function hasAudioSource() {
-      return audioPlayer.querySelector('source') !== null || audioPlayer.src !== '';
+      return audioPlayer.querySelector('source') !== null || audioPlayer.currentSrc !== '';
     }
 
     // Start Web Audio API oscillator as fallback
@@ -225,12 +228,12 @@
       }
 
       oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
+      gainNode = audioContext.createGain();
       
       oscillator.type = 'sine';
-      oscillator.frequency.setValueAtTime(440, audioContext.currentTime); // A4 note
+      oscillator.frequency.setValueAtTime(A4_FREQUENCY, audioContext.currentTime);
       
-      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.setValueAtTime(OSCILLATOR_VOLUME, audioContext.currentTime);
       
       oscillator.connect(gainNode);
       gainNode.connect(audioContext.destination);
@@ -247,21 +250,24 @@
       if (oscillator && isOscillatorPlaying) {
         oscillator.stop();
         oscillator.disconnect();
+        gainNode.disconnect();
         oscillator = null;
+        gainNode = null;
         isOscillatorPlaying = false;
         updateStatus('Stopped');
         updateButtonStates(false);
       }
     }
 
+    // Pause oscillator (Web Audio API doesn't support true pause, so we stop it)
+    function pauseOscillator() {
+      stopOscillator();
+    }
+
     // Play button handler
     playBtn.addEventListener('click', () => {
       if (hasAudioSource()) {
         audioPlayer.play()
-          .then(() => {
-            updateStatus('Playing audio');
-            updateButtonStates(true);
-          })
           .catch(err => {
             console.error('Playback error:', err);
             updateStatus('Error playing audio - starting demo tone instead');
@@ -277,10 +283,8 @@
     pauseBtn.addEventListener('click', () => {
       if (hasAudioSource() && !audioPlayer.paused) {
         audioPlayer.pause();
-        updateStatus('Paused');
-        updateButtonStates(false);
       } else if (isOscillatorPlaying) {
-        stopOscillator();
+        pauseOscillator();
       }
     });
 
@@ -289,8 +293,6 @@
       if (hasAudioSource()) {
         audioPlayer.pause();
         audioPlayer.currentTime = 0;
-        updateStatus('Stopped');
-        updateButtonStates(false);
       } else if (isOscillatorPlaying) {
         stopOscillator();
       }
@@ -316,7 +318,8 @@
     if (audioPlayer.textTracks && audioPlayer.textTracks.length > 0) {
       const track = audioPlayer.textTracks[0];
       
-      track.mode = 'showing'; // Enable the track
+      // Only set mode to 'hidden' to capture events without showing native captions
+      track.mode = 'hidden';
       
       track.addEventListener('cuechange', () => {
         const cues = track.activeCues;
