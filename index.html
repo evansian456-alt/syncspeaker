@@ -172,11 +172,13 @@
 
       function stopOscillatorDemo() {
         if (!isUsingOscillator || !oscillator) return;
+        const osc = oscillator;
+        const gain = oscGain;
         oscGain.gain.linearRampToValueAtTime(0.0001, audioCtx.currentTime + 0.02);
         setTimeout(() => {
-          try { oscillator.stop(); } catch (e) { /* ignore */ }
-          oscillator.disconnect();
-          oscGain.disconnect();
+          try { osc.stop(); } catch (e) { /* ignore */ }
+          osc.disconnect();
+          gain.disconnect();
         }, 50);
         oscillator = null;
         oscGain = null;
