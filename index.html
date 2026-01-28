@@ -1,20 +1,23 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SyncSpeaker</title>
-  <meta name="description" content="SyncSpeaker — simple landing page" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SyncSpeaker — demo</title>
+
   <style>
+    /* Reset / base */
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    html,body { height: 100%; }
     body {
-      font-family: Impact, "Arial Black", Arial, sans-serif;
+      font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       background: #000;
       color: #fff;
       min-height: 100vh;
       text-align: center;
       padding: 20px;
-      line-height: 1.3;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
     }
 
     /* Background */
@@ -22,111 +25,250 @@
       position: fixed;
       inset: 0;
       background:
-        radial-gradient(circle at 10% 10%, rgba(255,255,255,0.03), rgba(255,255,255,0) 20%),
-        linear-gradient(180deg, #040404 0%, #000 60%);
+        radial-gradient(circle at 10% 20%, rgba(255,255,255,0.03), transparent 12%),
+        linear-gradient(180deg, #001 0%, #000 100%);
       z-index: -1;
     }
 
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-      padding-top: 48px;
-    }
-
+    /* Layout */
+    .container { max-width: 960px; margin: 0 auto; }
+    .header { margin: 40px 0; }
     h1 {
-      font-size: clamp(2rem, 6vw, 3.5rem);
-      letter-spacing: 2px;
+      font-size: 48px;
+      letter-spacing: 1px;
       text-transform: uppercase;
-      margin-bottom: 12px;
+      font-weight: 700;
     }
+    p.lead { margin-top: 12px; color: #cfcfcf; }
 
-    p.lead {
-      margin-top: 8px;
-      color: #ddd;
-      font-size: 1rem;
-    }
-
-    .card {
-      margin-top: 28px;
-      padding: 18px;
-      border-radius: 10px;
-      background: rgba(255,255,255,0.02);
-      box-shadow: 0 6px 18px rgba(0,0,0,0.6);
-    }
-
+    /* Controls */
     .controls {
-      margin-top: 16px;
+      margin-top: 32px;
       display: flex;
-      gap: 8px;
+      gap: 12px;
       justify-content: center;
       flex-wrap: wrap;
     }
-
     button {
-      background: linear-gradient(180deg,#ff6b6b,#ff3b3b);
-      color: white;
+      background: #1e90ff;
       border: none;
-      padding: 10px 14px;
-      border-radius: 8px;
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 6px;
       cursor: pointer;
-      font-weight: 700;
+      font-weight: 600;
     }
-
     button.secondary {
       background: transparent;
       border: 1px solid rgba(255,255,255,0.12);
-      color: #fff;
-      padding: 8px 12px;
-      font-weight: 600;
     }
 
-    .footer {
-      position: fixed;
-      left: 0;
-      right: 0;
-      bottom: 10px;
-      font-size: 0.85rem;
-      color: #bbb;
+    /* Captions / status */
+    #captions {
+      margin-top: 18px;
+      color: #dce8ff;
+      background: rgba(255,255,255,0.03);
+      padding: 10px 14px;
+      border-radius: 6px;
+      max-width: 720px;
+      margin-left: auto;
+      margin-right: auto;
+      min-height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #status { margin-top: 12px; color: #9aa; font-size: 14px; }
+
+    footer { margin-top: 48px; color: #777; font-size: 14px; }
+
+    /* Focus styles for accessibility */
+    :focus-visible {
+      outline: 3px solid rgba(30,144,255,0.7);
+      outline-offset: 2px;
+      border-radius: 6px;
     }
 
-    /* Small screens */
-    @media (max-width: 420px) {
-      .container { padding-top: 28px; }
-      button { padding: 8px 12px; }
+    @media (max-width: 600px) {
+      h1 { font-size: 32px; }
+      .controls { gap: 8px; }
     }
   </style>
 </head>
 <body>
+
   <div class="bg" aria-hidden="true"></div>
 
-  <div class="container" role="main">
-    <h1>SyncSpeaker</h1>
-    <p class="lead">A simple page skeleton — the previous file was truncated. This one is valid HTML/CSS and will render correctly.</p>
+  <main class="container" role="main">
+    <header class="header">
+      <h1>SyncSpeaker</h1>
+      <p class="lead">Synchronize audio and captions — demo page.</p>
+    </header>
 
-    <div class="card" aria-live="polite">
-      <p>Place your app UI here. Example controls below are non-destructive.</p>
+    <section class="controls" aria-label="Controls">
+      <button id="playBtn" aria-controls="sampleAudio">Play sample</button>
+      <button id="pauseBtn" class="secondary" aria-controls="sampleAudio">Pause</button>
+      <button id="stopBtn" class="secondary" aria-controls="sampleAudio">Stop</button>
+    </section>
 
-      <div class="controls">
-        <button id="demoPlay">Demo action</button>
-        <button class="secondary" id="demoInfo">Info</button>
-      </div>
-    </div>
-  </div>
+    <!-- Audio element: replace the src with your actual audio file (sample.mp3)
+         A captions file (WebVTT) can be added as captions.vtt; it's optional.
+         If no audio file is bundled, the page falls back to a short demo tone. -->
+    <audio id="sampleAudio" preload="none">
+      <!-- Example: <source src="assets/sample.mp3" type="audio/mpeg"> -->
+      <!-- Captions track (optional): create captions.vtt and uncomment below -->
+      <!-- <track id="enTrack" kind="captions" srclang="en" label="English" src="captions.vtt" default> -->
+      Your browser does not support the audio element.
+    </audio>
 
-  <div class="footer">Built by evansian456-alt</div>
+    <div id="captions" aria-live="polite" aria-atomic="true">Captions will appear here.</div>
+    <section id="status" aria-live="polite" style="margin-top:12px; color:#9aa;">
+      Ready.
+    </section>
+
+    <footer>
+      <small>&copy; 2026 SyncSpeaker — local demo</small>
+    </footer>
+  </main>
 
   <script>
-    // Minimal JS so the page demonstrates interactivity and doesn't throw errors.
-    document.getElementById('demoPlay').addEventListener('click', function () {
-      alert('Demo action triggered — replace with your app logic.');
-    });
-    document.getElementById('demoInfo').addEventListener('click', function () {
-      console.info('SyncSpeaker page loaded successfully.');
-      alert('Open the developer console for more info.');
-    });
+    // Accessible, minimal playback + captions wiring.
+    (function () {
+      const playBtn = document.getElementById('playBtn');
+      const pauseBtn = document.getElementById('pauseBtn');
+      const stopBtn = document.getElementById('stopBtn');
+      const status = document.getElementById('status');
+      const captionsBox = document.getElementById('captions');
+      const audio = document.getElementById('sampleAudio');
 
-    // Confirm load in console for debugging
-    console.log('index.html loaded: no parse errors.');
+      // Track playback state for UI
+      let isUsingOscillator = false;
+      let audioCtx, oscillator, oscGain;
+
+      function supportsAudioSrc() {
+        // Return true if an audio src was added (<source> or audio.src)
+        // audio.currentSrc will be non-empty when a source is present and selected.
+        return Boolean(audio.currentSrc || audio.querySelector('source'));
+      }
+
+      function startOscillatorDemo() {
+        // Fallback short tone if no audio file is bundled
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        oscillator = audioCtx.createOscillator();
+        oscGain = audioCtx.createGain();
+        oscillator.type = 'sine';
+        oscillator.frequency.value = 440;
+        oscGain.gain.value = 0.0001; // start very quiet to avoid click
+        oscillator.connect(oscGain);
+        oscGain.connect(audioCtx.destination);
+        oscillator.start();
+        // ramp up, play for up to 30s (or until stopped)
+        oscGain.gain.linearRampToValueAtTime(0.12, audioCtx.currentTime + 0.02);
+        isUsingOscillator = true;
+        status.textContent = 'Playing demo tone (no audio bundled).';
+        captionsBox.textContent = '[Demo tone — no captions available]';
+      }
+
+      function stopOscillatorDemo() {
+        if (!isUsingOscillator || !oscillator) return;
+        oscGain.gain.linearRampToValueAtTime(0.0001, audioCtx.currentTime + 0.02);
+        setTimeout(() => {
+          try { oscillator.stop(); } catch (e) { /* ignore */ }
+          oscillator.disconnect();
+          oscGain.disconnect();
+        }, 50);
+        oscillator = null;
+        oscGain = null;
+        isUsingOscillator = false;
+      }
+
+      // Wire play/pause/stop
+      playBtn.addEventListener('click', async () => {
+        try {
+          if (supportsAudioSrc()) {
+            await audio.play();
+            status.textContent = 'Playing.';
+          } else {
+            // No source provided: use WebAudio demo tone
+            startOscillatorDemo();
+          }
+        } catch (err) {
+          status.textContent = 'Playback blocked — user interaction required.';
+        }
+      });
+
+      pauseBtn.addEventListener('click', () => {
+        if (isUsingOscillator) {
+          // Stop tone but keep ability to restart
+          stopOscillatorDemo();
+          status.textContent = 'Paused (demo tone).';
+        } else if (supportsAudioSrc()) {
+          audio.pause();
+          status.textContent = 'Paused.';
+        } else {
+          status.textContent = 'Nothing to pause.';
+        }
+      });
+
+      stopBtn.addEventListener('click', () => {
+        if (isUsingOscillator) {
+          stopOscillatorDemo();
+          status.textContent = 'Stopped (demo tone).';
+          captionsBox.textContent = 'Captions will appear here.';
+        } else if (supportsAudioSrc()) {
+          audio.pause();
+          audio.currentTime = 0;
+          status.textContent = 'Stopped.';
+          captionsBox.textContent = 'Captions will appear here.';
+        } else {
+          status.textContent = 'Nothing to stop.';
+        }
+      });
+
+      // Keyboard: allow Space/Enter to activate buttons when focused (native for <button>)
+      // Captions: if a WebVTT track is provided, display cues here.
+      function setupCaptions() {
+        // textTracks may not be ready until the track is loaded; use a short timeout to attach.
+        const tracks = audio.textTracks;
+        if (!tracks || tracks.length === 0) {
+          // No tracks declared — show placeholder.
+          captionsBox.textContent = 'No captions available.';
+          return;
+        }
+
+        // Use first text track
+        const tt = tracks[0];
+        tt.mode = 'hidden'; // keep it from automatically showing browser UI
+        // When cue changes, update our caption box
+        tt.addEventListener('cuechange', () => {
+          const active = tt.activeCues;
+          if (active && active.length) {
+            const texts = [];
+            for (let i = 0; i < active.length; i++) {
+              texts.push(active[i].text);
+            }
+            captionsBox.textContent = texts.join(' ');
+          } else {
+            captionsBox.textContent = '';
+          }
+        });
+      }
+
+      // If a source or track might be added later, attempt to initialize captions on load.
+      audio.addEventListener('loadedmetadata', setupCaptions, { once: true });
+      // Also try after DOM load (for static tracks)
+      document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(setupCaptions, 50);
+      });
+
+      // Clean up audio context on page unload (good practice)
+      window.addEventListener('beforeunload', () => {
+        if (audioCtx && typeof audioCtx.close === 'function') audioCtx.close();
+      });
+    })();
   </script>
+
 </body>
 </html>
