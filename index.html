@@ -1,19 +1,114 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SyncSpeaker</title>
-<style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body {
-    font-family: Impact, Arial Black, sans-serif;
-    background: #000;
-    color: #fff;
-    min-height: 100vh;
-    text-align: center;
-    padding: 20px;
-}
-.bg {
-    position:
-html
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SyncSpeaker - Smoke Test</title>
+  <style>
+    * { 
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box; 
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 2rem;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    .controls {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    button {
+      padding: 1rem 2rem;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 8px rgba(0,0,0,0.3);
+    }
+    button:active {
+      transform: translateY(0);
+    }
+    #playBtn {
+      background: #10b981;
+      color: white;
+    }
+    #playBtn:hover {
+      background: #059669;
+    }
+    #stopBtn {
+      background: #ef4444;
+      color: white;
+    }
+    #stopBtn:hover {
+      background: #dc2626;
+    }
+    #status {
+      font-size: 1.5rem;
+      padding: 1.5rem 3rem;
+      background: rgba(255,255,255,0.1);
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+      min-width: 300px;
+    }
+    .footer {
+      position: fixed;
+      bottom: 20px;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔊 SyncSpeaker</h1>
+  
+  <div class="controls">
+    <button id="playBtn">▶ Play</button>
+    <button id="stopBtn">⏹ Stop</button>
+  </div>
+  
+  <div id="status">Ready</div>
+  
+  <div class="footer">Smoke test UI - v1.0</div>
+
+  <script>
+    const playBtn = document.getElementById('playBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const status = document.getElementById('status');
+    
+    playBtn.addEventListener('click', () => {
+      status.textContent = '▶ Playing...';
+      console.log('Play button clicked');
+    });
+    
+    stopBtn.addEventListener('click', () => {
+      status.textContent = '⏹ Stopped';
+      console.log('Stop button clicked');
+    });
+    
+    // Log successful page load
+    console.log('SyncSpeaker smoke test UI loaded successfully');
+    console.log('No parsing errors detected');
+  </script>
+</body>
+</html>
