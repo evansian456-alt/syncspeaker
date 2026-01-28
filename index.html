@@ -7,13 +7,103 @@
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
-    font-family: Impact, Arial Black, sans-serif;
-    background: #000;
-    color: #fff;
-    min-height: 100vh;
-    text-align: center;
-    padding: 20px;
+  font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: #000;
+  color: #fff;
+  min-height: 100vh;
+  text-align: center;
+  padding: 20px;
 }
 .bg {
-    position:
-html
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at 10% 20%, rgba(255,255,255,0.03), transparent 12%),
+    linear-gradient(180deg, #001 0%, #000 100%);
+  z-index: -1;
+}
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+}
+.header {
+  margin: 40px 0;
+}
+h1 {
+  font-size: 48px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+p.lead {
+  margin-top: 12px;
+  color: #cfcfcf;
+}
+.controls {
+  margin-top: 32px;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+button {
+  background: #1e90ff;
+  border: none;
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+button.secondary {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.12);
+}
+footer {
+  margin-top: 48px;
+  color: #777;
+  font-size: 14px;
+}
+@media (max-width: 600px) {
+  h1 { font-size: 32px; }
+}
+</style>
+</head>
+<body>
+  <div class="bg" aria-hidden="true"></div>
+
+  <main class="container" role="main">
+    <header class="header">
+      <h1>SyncSpeaker</h1>
+      <p class="lead">Synchronize audio and captions — demo page.</p>
+    </header>
+
+    <section class="controls" aria-label="Controls">
+      <button id="playBtn">Play sample</button>
+      <button id="stopBtn" class="secondary">Stop</button>
+    </section>
+
+    <section id="status" aria-live="polite" style="margin-top:24px; color:#9aa;">
+      Ready.
+    </section>
+
+    <footer>
+      <small>&copy; 2026 SyncSpeaker — local demo</small>
+    </footer>
+  </main>
+
+  <script>
+    // Minimal smoke-test JS so the buttons do something during local testing
+    const playBtn = document.getElementById('playBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const status = document.getElementById('status');
+
+    playBtn.addEventListener('click', () => {
+      status.textContent = 'Play clicked — no audio bundled in this demo.';
+    });
+    stopBtn.addEventListener('click', () => {
+      status.textContent = 'Stopped.';
+    });
+  </script>
+</body>
+</html>
