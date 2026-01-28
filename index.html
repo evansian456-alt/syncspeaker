@@ -1,19 +1,156 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SyncSpeaker</title>
-<style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body {
-    font-family: Impact, Arial Black, sans-serif;
-    background: #000;
-    color: #fff;
-    min-height: 100vh;
-    text-align: center;
-    padding: 20px;
-}
-.bg {
-    position:
-html
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SyncSpeaker - Smoke Test</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .container {
+      background: rgba(255, 255, 255, 0.1);
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      max-width: 500px;
+      width: 100%;
+    }
+    
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    
+    .subtitle {
+      font-size: 1rem;
+      opacity: 0.8;
+      margin-bottom: 30px;
+    }
+    
+    .controls {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin-bottom: 30px;
+    }
+    
+    button {
+      padding: 12px 30px;
+      font-size: 1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px 0 rgba(0, 0, 0, 0.2);
+    }
+    
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.3);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    button:focus {
+      outline: 2px solid rgba(255, 255, 255, 0.8);
+      outline-offset: 2px;
+    }
+    
+    button:focus-visible {
+      outline: 3px solid rgba(255, 255, 255, 0.9);
+      outline-offset: 3px;
+    }
+    
+    #playBtn {
+      background: #4caf50;
+      color: white;
+    }
+    
+    #playBtn:hover {
+      background: #45a049;
+    }
+    
+    #stopBtn {
+      background: #f44336;
+      color: white;
+    }
+    
+    #stopBtn:hover {
+      background: #da190b;
+    }
+    
+    #status {
+      font-size: 1.2rem;
+      padding: 15px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+      min-height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .footer {
+      margin-top: 30px;
+      font-size: 0.9rem;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔊 SyncSpeaker</h1>
+    <p class="subtitle">Minimal Smoke Test UI</p>
+    
+    <div class="controls">
+      <button id="playBtn" aria-label="Play audio">▶️ Play</button>
+      <button id="stopBtn" aria-label="Stop audio">⏹️ Stop</button>
+    </div>
+    
+    <div id="status">Ready</div>
+    
+    <p class="footer">Test: Click buttons to update status</p>
+  </div>
+
+  <script>
+    const playBtn = document.getElementById('playBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const status = document.getElementById('status');
+    
+    playBtn.addEventListener('click', function() {
+      status.textContent = '▶️ Playing...';
+      console.log('Play button clicked');
+    });
+    
+    stopBtn.addEventListener('click', function() {
+      status.textContent = '⏹️ Stopped';
+      console.log('Stop button clicked');
+    });
+    
+    console.log('SyncSpeaker smoke test UI loaded successfully - no parsing errors');
+  </script>
+</body>
+</html>
