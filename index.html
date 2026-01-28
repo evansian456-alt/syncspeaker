@@ -162,7 +162,7 @@
     </audio>
 
     <div id="captions" aria-live="polite" aria-atomic="true">Captions will appear here.</div>
-    <section id="status" aria-live="polite" style="margin-top:12px; color:#9aa;">
+    <section id="status" aria-live="polite" style="margin-top:12px; color:#99aaaa;">
       Ready.
     </section>
 
@@ -186,9 +186,12 @@
       let audioCtx, oscillator, oscGain;
 
       function supportsAudioSrc() {
-        // Return true if an audio src was added (<source> or audio.src)
-        // audio.currentSrc will be non-empty when a source is present and selected.
-        return Boolean(audio.currentSrc || audio.querySelector('source'));
+        // Return true if an audio src was added and is valid
+        // Check if currentSrc is available (means audio has loaded a source)
+        if (audio.currentSrc) return true;
+        // Check if a source element exists with a valid src attribute
+        const sourceEl = audio.querySelector('source');
+        return Boolean(sourceEl && sourceEl.getAttribute('src'));
       }
 
       function startOscillatorDemo() {
@@ -300,10 +303,8 @@
 
       // If a source or track might be added later, attempt to initialize captions on load.
       audio.addEventListener('loadedmetadata', setupCaptions, { once: true });
-      // Also try after DOM load (for static tracks)
-      document.addEventListener('DOMContentLoaded', () => {
-        setTimeout(setupCaptions, 50);
-      });
+      // Since script is at end of body, DOM is ready - call setupCaptions directly
+      setTimeout(setupCaptions, 50);
 
       // Clean up audio context on page unload (good practice)
       window.addEventListener('beforeunload', () => {
