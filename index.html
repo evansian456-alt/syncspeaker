@@ -113,6 +113,11 @@
       transform: none;
     }
 
+    button:disabled:hover {
+      transform: none;
+      box-shadow: none;
+    }
+
     audio {
       width: 100%;
       max-width: 500px;
@@ -187,8 +192,7 @@
 
       <!-- Audio element with captions support -->
       <audio id="audioPlayer" controls>
-        <source src="" type="audio/mpeg" />
-        <track kind="captions" src="" srclang="en" label="English" default />
+        <!-- Source will be set dynamically when audio is loaded -->
         Your browser does not support the audio element.
       </audio>
 
@@ -283,8 +287,13 @@
       }
 
       try {
-        // Create audio context
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        // Disable button to prevent rapid clicks
+        demoToneBtn.disabled = true;
+        
+        // Reuse or create audio context
+        if (!audioContext || audioContext.state === 'closed') {
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
         
         // Create oscillator for tone generation
         oscillator = audioContext.createOscillator();
@@ -312,41 +321,49 @@
         updateStatus('Playing demo tone (440 Hz, 2 seconds)...');
         
         // Auto-stop after 2 seconds
-        setTimeout(() => {
+        oscillator.onended = function() {
           if (isDemoTonePlaying) {
             stopDemoTone();
             updateStatus('Demo tone finished.');
           }
-        }, 2000);
+        };
         
       } catch (err) {
         updateStatus('Error creating demo tone: ' + err.message);
         console.error('Web Audio API error:', err);
+        demoToneBtn.disabled = false;
       }
     }
 
     function stopDemoTone() {
       if (oscillator) {
+        // Disconnect and clean up oscillator
         try {
-          oscillator.stop();
+          oscillator.disconnect();
         } catch (e) {
-          // Oscillator might already be stopped
+          // Already disconnected
         }
         oscillator = null;
       }
-      if (audioContext) {
-        audioContext.close();
-        audioContext = null;
+      if (gainNode) {
+        gainNode.disconnect();
+        gainNode = null;
       }
       isDemoTonePlaying = false;
       demoToneBtn.textContent = '🎵 Play Demo Tone';
+      demoToneBtn.disabled = false;
     }
 
     demoToneBtn.addEventListener('click', playDemoTone);
 
     // Update UI based on audio player events
     audioPlayer.addEventListener('play', () => updateStatus('Playing audio...'));
-    audioPlayer.addEventListener('pause', () => updateStatus('Audio paused.'));
+    audioPlayer.addEventListener('pause', () => {
+      // Only show paused message if not at the beginning (which indicates stop was called)
+      if (audioPlayer.currentTime > 0 && !audioPlayer.ended) {
+        updateStatus('Audio paused.');
+      }
+    });
     audioPlayer.addEventListener('ended', () => updateStatus('Audio playback ended.'));
     audioPlayer.addEventListener('error', () => updateStatus('Audio error occurred.'));
 
