@@ -119,13 +119,10 @@
       <button id="stopBtn" class="secondary" aria-controls="sampleAudio">Stop</button>
     </section>
 
-    <!-- Audio element: replace the src with your actual audio file (sample.mp3)
-         A captions file (WebVTT) can be added as captions.vtt; it's optional.
-         If no audio file is bundled, the page falls back to a short demo tone. -->
-    <audio id="sampleAudio" preload="none">
-      <!-- Example: <source src="assets/sample.mp3" type="audio/mpeg"> -->
-      <!-- Captions track (optional): create captions.vtt and uncomment below -->
-      <!-- <track id="enTrack" kind="captions" srclang="en" label="English" src="captions.vtt" default> -->
+    <!-- Audio element with sample audio file and synchronized captions -->
+    <audio id="sampleAudio" preload="metadata">
+      <source src="assets/sample.mp3" type="audio/mpeg">
+      <track id="enTrack" kind="captions" srclang="en" label="English" src="assets/captions.vtt" default>
       Your browser does not support the audio element.
     </audio>
 
